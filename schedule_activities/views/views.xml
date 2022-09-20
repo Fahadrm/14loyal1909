@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+
+        <record id="action_window_mail_activities_search" model="ir.ui.view">
+            <field name="name">mail.activity.view.search</field>
+            <field name="model">mail.activity</field>
+            <field name="arch" type="xml">
+                <search string="Activity">
+                    <field name="res_model"/>
+                    <field name="summary"/>
+                    <field name="activity_type_id"/>
+                    <filter invisible="1" string="Late Activities" name="activities_overdue"
+                            domain="[('date_deadline', '&lt;', context_today().strftime('%Y-%m-%d'))]"
+                            help="Show all records which has next action date is before today"/>
+                    <filter string="Show Today Activities" name="activities_today"
+                            domain="[('date_deadline', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                    <filter invisible="1" string="Future Activities" name="activities_upcoming_all"
+                            domain="[('date_deadline', '&gt;', context_today().strftime('%Y-%m-%d'))
+                        ]"/>
+                    <filter string="Show Done Activities" name="done_activities"
+                            domain="[('status', '=', 'done')]"/>
+                    <filter string="Show Active Tasks" name="every_activities" domain="['|', '|', ('status', '=', 'new'), ('status', '=', 'progress'), ('status', '=', 'transfer')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Deadline" name="date_deadline" context="{'group_by': 'date_deadline'}"/>
+                        <filter string="Created By" name="createdby" context="{'group_by': 'create_uid'}"/>
+                        <filter string="Activity Type" name="activittype" context="{'group_by': 'activity_type_id'}"/>
+                        <filter string="Priority" name="priority" context="{'group_by': 'priority'}"/>
+                        <filter string="Assigned To" name="user_id" context="{'group_by': 'user_id'}"/>
+                        <filter string="Module" name="res_model" context="{'group_by': 'res_model'}"/>
+                    </group>
+
+                    <searchpanel>
+                        <!--                    <field name="res_model" string="Module" icon="fa-users"/>-->
+                        <field name="user_id" string="Assigned To" icon="fa-users"/>
+                        <field name="activity_type_id" string="Type" icon="fa-mars"/>
+                        <field name="priority" string="Priority" icon="fa-heart"/>
+                        <field name="res_model_id" string="Model" icon="fa-heart"/>
+                        <field name="status" string="Status" icon="fa-calendar"/>
+                    </searchpanel>
+                </search>
+            </field>
+        </record>
+
+
+        <!--    <record model="ir.ui.view" id="mail_schedule_activity_graph_view">-->
+        <!--      <field name="name">report.board.graph</field>-->
+        <!--      <field name="model">mail.activity</field>-->
+        <!--      <field name="arch" type="xml">-->
+        <!--        <graph string="Activity" type="bar">-->
+        <!--          <field name="res_name"/>-->
+        <!--          <field name="activity_type_id"/>-->
+        <!--          <field name="summary"/>-->
+        <!--          <field name="note"/>-->
+        <!--        </graph>-->
+        <!--      </field>-->
+        <!--    </record>-->
+        <record id="mail_schedule_activity_tree_view" model="ir.ui.view">
+            <field name="name">report.board.tree</field>
+            <field name="model">mail.activity</field>
+            <field name="arch" type="xml">
+
+                <tree string="Account" decoration-danger="date_deadline &lt; current_date"
+                      decoration-success="date_deadline == current_date"
+                      default_order="date_deadline" create="true">
+                    <field name="user_id"/>
+                    <field name="date_deadline"/>
+                    <field name="res_model" string="Module"/>
+                    <field name="res_model_id" string="Module"/>
+                    <field name="status" decoration-success="status == 'done'"
+                           decoration-info="status == 'new'"
+                           decoration-warning="status == 'progress'"
+                           decoration-primary="status == 'transfer'"
+                           />
+                    <field name="res_name"/>
+                    <field name="activity_type_id"/>
+                    <field name="summary"/>
+                    <field name="is_action" invisible="1"/>
+                    <field name="note" invisible="1"/>
+                    <field name="create_date" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="mail_schedule_activity_form_view" model="ir.ui.view">
+            <field name="name">report.board.form</field>
+            <field name="model">mail.activity</field>
+            <field name="arch" type="xml">
+
+                <form string="Log an Activity">
+                    <header>
+                        <button id="mail_activity_schedule" string="Schedule" name="action_close_dialog"
+                                    type="object" class="btn-primary"
+                                    attrs="{'invisible': ['|',('id', '!=', False),('is_action', '=', True)]}"
+                                    data-hotkey="q"/>
+<!--                            <button id="mail_activity_save" string="Save" name="action_close_dialog" type="object"-->
+<!--                                    class="btn-primary"-->
+<!--                                    attrs="{'invisible': ['|',('id', '=', False),('is_action', '=', True)]}"-->
+<!--                                    data-hotkey="q"/>-->
+                            <button name="action_progress" state="new" type="object"
+							string="Progress" class="btn-secondary"
+							attrs="{'invisible': ['|', ('status', '=', 'progress'), ('status', '=', 'transfer')]}"/>
+
+                          <button name="action_transfer" state="paid" type="object"
+							string="Transfer" class="btn-secondary"
+							attrs="{'invisible': ['|', '|', ('status', '=', 'transfer'), ('status', '=', 'done'), ('status', '=', 'new')]}"/>
+
+<!--                          <button name="action_cancelled" state="cancelled"-->
+<!--							type="object" string="Cancel" class="oe_highlight"-->
+<!--							attrs="{'invisible': ['|', '|', ('state', '=', 'cancelled'), ('state', '=', 'fetch'), ('state', '=', 'draft')]}"/>-->
+                            <button attrs="{'invisible': ['|', '|', '|',('is_action', '=', True), ('status', '=', 'done'), ('status', '=', 'progress'), ('status', '=', 'new')]}"
+                                    string="Mark as Done" name="action_done"
+                                    type="object" class="btn-secondary" data-hotkey="w"
+                                    context="{'mail_activity_quick_update': True}"/>
+
+                        <field name="status" widget="statusbar"
+							statusbar_visible="new,progress,transfer,done">
+                        </field>
+                    </header>
+                    <sheet string="Activity">
+                        <group invisible="1">
+                            <field name="activity_category" invisible="1"/>
+                            <field name="res_model" invisible="1" readonly="1"/>
+                            <field name="res_model_id" invisible="1"/>
+                            <field name="res_id" invisible="1" widget="integer"/>
+<!--                            <field name="chaining_type" invisible="1"/>-->
+                            <field name="previous_activity_type_id"/>
+                            <field name="has_recommended_activities"/>
+                        </group>
+                        <group attrs="{'invisible': ['|',('has_recommended_activities','=',False),('is_action', '=', True)]}">
+                            <div class="o_row">
+                                <strong>Recommended Activities</strong>
+                                <field name="recommended_activity_type_id" widget="selection_badge"
+                                       domain="[('previous_type_ids', '=', previous_activity_type_id)]"
+                                       nolabel="1"/>
+                            </div>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="is_action" invisible="1"/>
+                                <field name="res_name" readonly="0"/>
+                                <field name="res_model" invisible="1" readonly="1"/>
+                                <field name="activity_type_id" required="1"
+                                       options="{'no_create': True, 'no_open': True}"/>
+                                <field name="priority"/>
+                                <field name="summary" placeholder="e.g. Discuss proposal"/>
+                            </group>
+                            <group>
+                                <field name="create_uid" context="{'mail_activity_quick_update': True}"/>
+                                <field name="date_deadline"/>
+                                <field name="user_id" context="{'mail_activity_quick_update':1}"/>
+<!--                                <field name="chaining_type" readonly="0" invisible="1"/>-->
+                                <field name="state" readonly="0" invisible="1"/>
+                            </group>
+                        </group>
+                        <field name="note" class="oe-bordered-editor" placeholder="Log a note..."/>
+                        <footer>
+                            <field name="id" invisible="1"/>
+
+
+
+                            <!--                         <button attrs="{'invisible': [('chaining_type', '=', 'trigger')]}" string="Done &amp; Schedule Next" name="action_done_schedule_next"-->
+                            <!--                            type="object" class="btn-secondary" data-hotkey="x"-->
+                            <!--                            context="{'mail_activity_quick_update': True}"/>-->
+                            <!--                        <button attrs="{'invisible': [('chaining_type', '=', 'suggest')]}" string="Done &amp; Launch Next" name="action_done_schedule_next"-->
+                            <!--                            type="object" class="btn-secondary" data-hotkey="x"-->
+                            <!--                            context="{'mail_activity_quick_update': True}"/>-->
+                            <!--                        <button string="Discard" class="btn-secondary" special="cancel" data-hotkey="z" />-->
+
+                        </footer>
+                    </sheet>
+                </form>
+
+            </field>
+        </record>
+        <record id="calendar_event_inherit_view_form" model="ir.ui.view">
+            <field name="name">calendar.event.inherit.form</field>
+            <field name="model">calendar.event</field>
+            <field name="inherit_id" ref="calendar.view_calendar_event_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@class='oe_chatter']/field[@name='message_ids']" position="after">
+                    <field name="activity_ids" widget="mail_activity"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!--       <record id="mail_activity_dashboard_inherit_calendar" model="ir.actions.act_window.view">-->
+        <!--        <field name="sequence" eval="10"/>-->
+        <!--        <field name="view_mode">calendar</field>-->
+        <!--        <field name="act_window_id" ref="action_window_mail_activities"/>-->
+        <!--        <field name="view_id" ref="mail_schedule_activity_calendar_view"/>-->
+        <!--    </record>-->
+
+
+        <!--    <record id="mail_activity_dashboard_inherit_graph" model="ir.actions.act_window.view">-->
+        <!--        <field name="sequence" eval="10"/>-->
+        <!--        <field name="view_mode">graph</field>-->
+        <!--        <field name="act_window_id" ref="action_window_mail_activities"/>-->
+        <!--        <field name="view_id" ref="mail_schedule_activity_graph_view"/>-->
+        <!--    </record>-->
+
+        <record id="action_window_mail_activities" model="ir.actions.act_window">
+            <field name="name">Activities</field>
+            <field name="res_model">mail.activity</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('is_action', '=', False)]</field>
+            <field name="context">{'mail_activity_quick_update':1, 'search_default_every_activities':1}</field>
+            <field name="search_view_id" ref="action_window_mail_activities_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_empty_folder">
+                    No rating yet
+                </p>
+                <p>
+                    Create Mail Activity
+                </p>
+            </field>
+        </record>
+
+        <record id="mail_activity_dashboard_inherit_tree" model="ir.actions.act_window.view">
+            <field name="sequence" eval="10"/>
+            <field name="view_mode">tree</field>
+            <field name="act_window_id" ref="schedule_activities.action_window_mail_activities"/>
+            <field name="view_id" ref="mail_schedule_activity_tree_view"/>
+        </record>
+
+
+        <record id="mail_activity_dashboard_inherit_form" model="ir.actions.act_window.view">
+            <field name="sequence" eval="50"/>
+            <field name="view_mode">form</field>
+            <field name="act_window_id" ref="schedule_activities.action_window_mail_activities"/>
+            <field name="view_id" ref="mail_schedule_activity_form_view"/>
+        </record>
+<!--        <record id="activity_status_form_view" model="ir.ui.view">-->
+<!--            <field name="name">activity.status.form</field>-->
+<!--            <field name="model">activity.status</field>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <form string="Activity Status">-->
+<!--                    <sheet>-->
+<!--                        <group>-->
+<!--                            <group>-->
+<!--                                <field name="name"/>-->
+<!--                                <field name="is_done"/>-->
+<!--                            </group>-->
+<!--                        </group>-->
+<!--                    </sheet>-->
+<!--                </form>-->
+<!--            </field>-->
+<!--        </record>-->
+<!--        <record id="activity_status_tree_view" model="ir.ui.view">-->
+<!--            <field name="name">activity.status.tree</field>-->
+<!--            <field name="model">activity.status</field>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <tree string="Activity Status">-->
+
+
+<!--                    <field name="name"/>-->
+<!--                    <field name="is_done"/>-->
+
+<!--                </tree>-->
+<!--            </field>-->
+<!--        </record>-->
+<!--        <record model="ir.actions.act_window" id="action_activity_status_form">-->
+<!--            <field name="name">Activity Status</field>-->
+<!--            <field name="res_model">activity.status</field>-->
+<!--&lt;!&ndash;            <field name="type">ir.actions.act_window</field>&ndash;&gt;-->
+<!--            <field name="view_mode">tree,form</field>-->
+<!--        </record>-->
+
+
+        <menuitem id="menu_for_activities" name="Dashboard Activities" sequence="20"
+                  web_icon="schedule_activities,static/description/icon.png" action="action_window_mail_activities"/>
+
+
+
+    </data>
+</odoo>

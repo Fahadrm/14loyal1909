@@ -1,0 +1,17 @@
+
+
+ <odoo>
+    <data>
+        <record id="restrct_create_activity_dashboard" model="ir.ui.view">
+            <field name="name">res.users.preferences.form.inherit</field>
+            <field name="model">mail.activity</field>
+            <field name="inherit_id" ref="schedule_activities.mail_schedule_activity_form_view"/>
+            <field name="arch" type="xml">
+                <form position="attributes">
+                    <attribute name="create">false</attribute>
+<!--                    <attribute name="edit">false</attribute>-->
+                </form>
+            </field>
+        </record>
+    </data>
+ </odoo>
