@@ -1,0 +1,84 @@
+<odoo>
+    <data>
+        <record id="product_pricelist_hide_create_tree_view" model="ir.ui.view">
+            <field name="name">product.pricelist.create.tree</field>
+            <field name="model">product.pricelist</field>
+            <field name="inherit_id" ref="product.product_pricelist_view_tree"/>
+            <field name="groups_id" eval="[(6, 0, [ref('loyal_restrict_customer_pricelist_creation_and_updation.group_hide_pricelist_creation')])]"/>
+            <field name="arch" type="xml">
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="create">false</attribute>
+                    <attribute name="edit">false</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="product_pricelist_create_form_view" model="ir.ui.view">
+            <field name="name">product.pricelist.create.form</field>
+            <field name="model">product.pricelist</field>
+            <field name="inherit_id" ref="product.product_pricelist_view"/>
+            <field name="groups_id" eval="[(6, 0, [ref('loyal_restrict_customer_pricelist_creation_and_updation.group_hide_pricelist_creation')])]"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form" position="attributes">
+                    <attribute name="create">false</attribute>
+                    <attribute name="edit">false</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="product_pricelist_create_kanban_view" model="ir.ui.view">
+            <field name="name">product.pricelist.create.kanban</field>
+            <field name="model">product.pricelist</field>
+            <field name="inherit_id" ref="product.product_pricelist_view_kanban"/>
+            <field name="groups_id" eval="[(6, 0, [ref('loyal_restrict_customer_pricelist_creation_and_updation.group_hide_pricelist_creation')])]"/>
+            <field name="arch" type="xml">
+                <xpath expr="//kanban" position="attributes">
+                    <attribute name="create">false</attribute>
+                    <attribute name="edit">false</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="readonly_pricelist_sale_order_view" model="ir.ui.view">
+            <field name="name">product.pricelist.sale.order</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="groups_id" eval="[(6, 0, [ref('loyal_restrict_customer_pricelist_creation_and_updation.group_hide_pricelist_creation')])]"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group/group[@name='order_details']/div/field[@name='pricelist_id']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                    <attribute name="force_save">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+
+
+        <record id="readonly_pricelist_res_partner_view" model="ir.ui.view">
+            <field name="name">product.pricelist.res.partner</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="product.view_partner_property_form"/>
+            <field name="groups_id" eval="[(6, 0, [ref('loyal_restrict_customer_pricelist_creation_and_updation.group_hide_pricelist_creation')])]"/>
+            <field name="arch" type="xml">
+                <xpath expr="//group[@name='sale']/field[@name='property_product_pricelist']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                    <attribute name="force_save">1</attribute>
+                </xpath>
+            </field>
+        </record>
+
+
+             <record id="readonly_pricelist_pos_order_view" model="ir.ui.view">
+            <field name="name">pos.pricelist.sale.order</field>
+            <field name="model">pos.config</field>
+            <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+            <field name="groups_id" eval="[(6, 0, [ref('loyal_restrict_customer_pricelist_creation_and_updation.group_hide_pricelist_creation')])]"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet/div[@id='pricing']/div/div/div/field[@name='pricelist_id']" position="attributes">
+                    <attribute name="readonly">1</attribute>
+                    <attribute name="force_save">1</attribute>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
