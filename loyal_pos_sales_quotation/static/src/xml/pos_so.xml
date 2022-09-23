@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+	<t t-name="SOCreateButton" owl="1">
+		<div class="control-button o_fiscal_position_button">
+			<i class="fa fa-plus" role="img" aria-label="Create SO" title="Create SO"/>
+            <span>Create SO</span>
+		</div>
+	</t>
+
+    <t t-name="SOCreatePopup" owl="1">
+		<div role="dialog" class="modal-dialog">
+			<Draggable>
+				<div class="popup popup-sale-order">
+					<header class="title">
+						<div class="row">
+							<t t-esc="props.title"/>
+						</div>
+					</header>
+                    <main class="body col-lg-4 col-md-6 col-sm-12">
+						<div class="row">
+							<div>
+								<span>Select Delivery Date</span>
+							</div>
+                            <div style="margin-top: 10px;" t-on-input="dateValidate()">
+								<input type="text" class="order_date" placeholder="yyyy/mm/dd" maxlength="10"
+								t-model="state.dateValue" required=""/>
+							</div>
+							<br/>
+                    		<span class="alert_msg"/>
+						</div>
+					</main>
+                    <footer class="footer">
+						<div style="color: white;background: #6EC89B;border-color: transparent;" class="button confirm"
+                             t-on-click="createSaleOrder()">
+                        	Create Order
+                    	</div>
+                        <div style="color:white;background:#D25B5B;border-color: transparent;" class="button cancel"
+                             t-on-click="cancel">
+							Cancel
+						</div>
+					</footer>
+				</div>
+			</Draggable>
+		</div>
+	</t>
+
+	<t t-name="PosSoRef" owl="1">
+        <div role="dialog" class="modal-dialog">
+            <div class="popup popup-so-created">
+                <p class="title">
+                    <t t-esc="props.title" />
+                </p>
+                <p class="body">
+                    <t t-esc="props.body" />
+                </p>
+                <div class="footer">
+                    <div class="button cancel" t-on-click="so_created">
+                        <t t-esc="props.confirmText" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+
+</templates>
