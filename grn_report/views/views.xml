@@ -11,11 +11,11 @@
                         <field name="name"/>
                         <field name="partner"/>
                         <field name="effective_date"/>
-                        <field name="productname"/>
+                        <field name="productname" string="Product Name"/>
                         <field name="demanded_qty"/>
-                        <field name="cost"/>
                         <field name="received_qty"/>
-                        <field name="unit_price"/>
+                        <field name="cost"/>
+                        <field name="unit_price" string="Total  Value"/>
                  </tree>
              </field>
          </record>
