@@ -1,0 +1,27 @@
+<odoo>
+    <data>
+
+        <record id="creditdebit_restriction_config" model="ir.ui.view">
+            <field name="name">res.config.settings.roundoff</field>
+            <field name="model">res.config.settings</field>
+           <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+            <field name="arch" type="xml">
+             <div id="eu_service" position="after">
+                    <h2>Credit Debit Value Restriction</h2>
+                    <div class="row mt16 o_settings_container" id="creditdebit_restriction_id">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div name="creditdebit_restriction_conf">
+                                <div>
+                                    <field name="creditdebit_restriction" class="oe_inline"/>
+                                    <label for="creditdebit_restriction"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+            </field>
+        </record>
+
+
+    </data>
+</odoo>
